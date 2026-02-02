@@ -5,11 +5,11 @@
 ![Vite](https://img.shields.io/badge/Vite-B73BFE?style=for-the-badge&logo=vite&logoColor=FFD62E)
 ![Netlify](https://img.shields.io/badge/Netlify-00C7B7?style=for-the-badge&logo=netlify&logoColor=white)
 
-**WeatherSync** est une application météo moderne et intuitive construite avec React.js, offrant des prévisions météorologiques précises avec une interface utilisateur élégante et responsive.
+**rk-Weather** est une application météo moderne et intuitive construite avec React.js, offrant des prévisions météorologiques précises avec une interface utilisateur élégante et responsive.
 
 🚀 **Live Demo :** [rk-wheather.netlify.app](https://rk-wheather.netlify.app/)
 
-![Weather App Preview]()
+![Weather Web App Design Template _ Weather Web UI Design _ Uizard](https://github.com/user-attachments/assets/0bbbb36a-47f4-4d4d-93d4-e94c5af8bee4)
 
 ## ✨ Fonctionnalités
 
