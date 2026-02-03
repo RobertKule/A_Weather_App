@@ -19,7 +19,11 @@
     "lint:fix": "eslint src --report-unused-disable-directives --max-warnings 0 --fix",
     "format": "prettier --write \"src/**/*.{js,jsx,json,css}\"",
     "format:check": "prettier --check \"src/**/*.{js,jsx,json,css}\"",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "netlify:deploy": "netlify deploy --prod",
+  "netlify:deploy:preview": "netlify deploy",
+  "netlify:build": "npm run build && npm run postbuild",
+  "postbuild": "cp _redirects dist/_redirects 2>/dev/null || :"
   },
   "dependencies": {
     "react": "^19.2.0",
