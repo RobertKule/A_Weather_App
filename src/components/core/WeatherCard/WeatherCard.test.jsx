@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import WeatherCard from './WeatherCard';
 
 const mockWeatherData = {
-  city: 'Paris',
+  city: 'Goma',
   country: 'FR',
   temperature: 22,
   feelsLike: 20,
@@ -25,7 +25,7 @@ describe('WeatherCard', () => {
     expect(screen.getByRole('article')).toHaveClass('animate-pulse');
 
     // Vérifie qu'il n'y a pas de données
-    expect(screen.queryByText('Paris')).not.toBeInTheDocument();
+    expect(screen.queryByText('Goma')).not.toBeInTheDocument();
   });
 
   it('renders error state when no data provided', () => {
@@ -39,7 +39,7 @@ describe('WeatherCard', () => {
     render(<WeatherCard weatherData={mockWeatherData} />);
 
     // Vérifie les données principales
-    expect(screen.getByText('Paris, FR')).toBeInTheDocument();
+    expect(screen.getByText('Goma, FR')).toBeInTheDocument();
     expect(screen.getByText('22°C')).toBeInTheDocument();
     expect(screen.getByText('Ensoleillé')).toBeInTheDocument();
 

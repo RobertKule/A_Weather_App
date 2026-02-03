@@ -107,7 +107,7 @@ const WeatherCard = ({
       initial="hidden"
       animate="visible"
       aria-labelledby="weather-card-title"
-      className={`max-w-2xl mx-auto ${className}`}
+      className={`w-full mx-auto ${className}`}
     >
       <Card className="shadow-lg">
         {/* HEADER */}
@@ -168,7 +168,7 @@ const WeatherCard = ({
         {/* BODY */}
         <CardBody>
           <div
-            className="flex flex-col md:flex-row items-center md:items-start gap-8"
+            className="flex flex-col md:flex-row items-center md:items-start gap-8 "
             aria-live="polite"
             aria-atomic="true"
           >
