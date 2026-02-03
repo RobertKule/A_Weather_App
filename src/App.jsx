@@ -33,15 +33,15 @@ const WeatherApp = () => {
     { name: 'Butembo', distance: '245km', temp: '23°' },
     { name: 'Beni', distance: '280km', temp: '25°' },
     { name: 'Kigali', distance: '165km', temp: '22°' },
-    { name: 'Gisenyi', distance: '95km', temp: '23°' }
+    { name: 'Gisenyi', distance: '95km', temp: '23°' },
   ];
 
-  const handleCitySelect = (cityName) => {
+  const handleCitySelect = cityName => {
     console.log('Sélection de ville:', cityName);
     searchCity(cityName);
   };
 
-  const handleToggleFavorite = (cityName) => {
+  const handleToggleFavorite = cityName => {
     console.log('Toggle favorite:', cityName);
     if (favorites.includes(cityName)) {
       removeFavorite(cityName);
@@ -58,7 +58,7 @@ const WeatherApp = () => {
   }, [error]);
 
   // Fonction pour obtenir l'icône météo
-  const getWeatherIcon = (condition) => {
+  const getWeatherIcon = condition => {
     if (!condition) return '☀️';
     const cond = condition.toLowerCase();
     if (cond.includes('soleil') || cond.includes('clear')) return '☀️';
@@ -99,14 +99,14 @@ const WeatherApp = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Colonne principale - WeatherCard */}
           <div className="lg:col-span-2 space-y-8">
-            <WeatherCard 
+            <WeatherCard
               weatherData={weatherData}
               loading={loading}
               onRefresh={refreshData}
               unit={unit}
               onUnitChange={changeUnit}
             />
-            
+
             {/* Prévisions sur 7 jours */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -154,16 +154,18 @@ const WeatherApp = () => {
                         className="flex flex-col items-center p-3 rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                       >
                         <span className="text-gray-500 dark:text-gray-400 text-sm font-medium">
-                          {['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'][index]}
+                          {
+                            ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'][
+                              index
+                            ]
+                          }
                         </span>
                         <div className="text-3xl my-3">☀️</div>
                         <div className="flex flex-col items-center">
                           <span className="font-bold text-gray-900 dark:text-white">
                             24°
                           </span>
-                          <span className="text-sm text-gray-400">
-                            18°
-                          </span>
+                          <span className="text-sm text-gray-400">18°</span>
                         </div>
                       </div>
                     ))}
@@ -191,11 +193,15 @@ const WeatherApp = () => {
                       <div className="flex items-end gap-1 h-24">
                         {hourlyForecast.slice(0, 8).map((hour, i) => (
                           <div key={i} className="flex flex-col items-center">
-                            <div 
+                            <div
                               className="w-6 bg-gradient-to-t from-blue-400 to-blue-300 rounded-t"
-                              style={{ height: `${(hour.temperature - 15) * 4}px` }}
+                              style={{
+                                height: `${(hour.temperature - 15) * 4}px`,
+                              }}
                             ></div>
-                            <div className="text-xs text-gray-500 mt-1">{hour.time}</div>
+                            <div className="text-xs text-gray-500 mt-1">
+                              {hour.time}
+                            </div>
                           </div>
                         ))}
                       </div>

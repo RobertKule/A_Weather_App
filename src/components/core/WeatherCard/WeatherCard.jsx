@@ -303,7 +303,7 @@ const WeatherCard = ({
 };
 
 const WeatherDetail = ({ icon, label, value, level }) => {
-  const getLevelColor = (lvl) => {
+  const getLevelColor = lvl => {
     const colors = {
       low: 'text-green-600',
       moderate: 'text-yellow-600',
@@ -335,7 +335,7 @@ const WeatherDetail = ({ icon, label, value, level }) => {
   );
 };
 
-const getUVLevel = (uv) => {
+const getUVLevel = uv => {
   if (!uv) return '';
   if (uv <= 2) return 'low';
   if (uv <= 5) return 'moderate';
