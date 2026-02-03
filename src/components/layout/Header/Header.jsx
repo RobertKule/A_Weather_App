@@ -31,7 +31,7 @@ const Header = ({
 
   // Fermer le menu mobile lors d'un clic extérieur
   useEffect(() => {
-    const handleClickOutside = (event) => {
+    const handleClickOutside = event => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
         setIsMenuOpen(false);
       }
@@ -47,7 +47,7 @@ const Header = ({
     }
   }, [isSearchOpen]);
 
-  const handleSearch = (e) => {
+  const handleSearch = e => {
     e.preventDefault();
     if (searchQuery.trim()) {
       onSearch?.(searchQuery.trim());
@@ -56,7 +56,7 @@ const Header = ({
     }
   };
 
-  const handleQuickCitySelect = (city) => {
+  const handleQuickCitySelect = city => {
     onSearch?.(city);
     setIsSearchOpen(false);
     setSearchQuery('');
@@ -70,7 +70,6 @@ const Header = ({
     >
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between gap-4">
-          
           {/* 1. LOGO & NOM (Visible partout) */}
           <div className="flex items-center gap-3 flex-shrink-0">
             <button
@@ -79,9 +78,12 @@ const Header = ({
             >
               {isMenuOpen ? <FiX size={22} /> : <FiMenu size={22} />}
             </button>
-            
+
             <div className="flex items-center gap-2">
-              <WiDaySunny size={32} className="text-yellow-500 animate-pulse-slow flex-shrink-0" />
+              <WiDaySunny
+                size={32}
+                className="text-yellow-500 animate-pulse-slow flex-shrink-0"
+              />
               <div className="flex flex-col">
                 <h1 className="text-lg sm:text-xl font-extrabold bg-gradient-to-r from-blue-600 to-teal-500 bg-clip-text text-transparent leading-none">
                   rk-weather
@@ -108,13 +110,13 @@ const Header = ({
 
           {/* 3. ACTIONS RAPIDES */}
           <div className="flex items-center gap-2">
-            <button 
+            <button
               onClick={() => setIsSearchOpen(true)}
               className="p-2.5 bg-gray-100 dark:bg-gray-800 text-gray-500 hover:text-blue-500 rounded-xl transition-all"
             >
               <FiSearch size={20} />
             </button>
-            
+
             <div className="hidden sm:flex items-center border-l border-gray-200 dark:border-gray-700 ml-2 pl-2 gap-2">
               <Button variant="ghost" size="small" onClick={onLocationClick}>
                 <FiMapPin size={18} />
@@ -143,7 +145,10 @@ const Header = ({
                 <button className="flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300">
                   <FiStar /> Favoris
                 </button>
-                <button onClick={onLocationClick} className="flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300">
+                <button
+                  onClick={onLocationClick}
+                  className="flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300"
+                >
                   <FiMapPin /> Ma Position
                 </button>
                 <button className="flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300">
@@ -177,8 +182,10 @@ const Header = ({
             >
               <div className="p-6">
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-black dark:text-white">Recherche</h2>
-                  <button 
+                  <h2 className="text-xl font-black dark:text-white">
+                    Recherche
+                  </h2>
+                  <button
                     onClick={() => setIsSearchOpen(false)}
                     className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
                   >
@@ -187,29 +194,36 @@ const Header = ({
                 </div>
 
                 <form onSubmit={handleSearch} className="relative mb-6">
-                  <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-500" size={22} />
+                  <FiSearch
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-500"
+                    size={22}
+                  />
                   <input
                     ref={searchInputRef}
                     type="text"
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={e => setSearchQuery(e.target.value)}
                     placeholder="Entrez une ville..."
                     className="w-full pl-12 pr-4 py-4 bg-gray-100 dark:bg-gray-800 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 text-lg font-medium"
                   />
                 </form>
 
                 <div className="space-y-4">
-                  <p className="text-xs font-bold uppercase text-gray-400 tracking-widest">Suggestions</p>
+                  <p className="text-xs font-bold uppercase text-gray-400 tracking-widest">
+                    Suggestions
+                  </p>
                   <div className="flex flex-wrap gap-2">
-                    {['Paris', 'New York', 'Tokyo', 'London', 'Berlin'].map((city) => (
-                      <button
-                        key={city}
-                        onClick={() => handleQuickCitySelect(city)}
-                        className="px-4 py-2 bg-gray-50 dark:bg-gray-800 hover:bg-blue-500 hover:text-white dark:hover:bg-blue-600 rounded-xl text-sm font-medium transition-all"
-                      >
-                        {city}
-                      </button>
-                    ))}
+                    {['Paris', 'New York', 'Tokyo', 'London', 'Berlin'].map(
+                      city => (
+                        <button
+                          key={city}
+                          onClick={() => handleQuickCitySelect(city)}
+                          className="px-4 py-2 bg-gray-50 dark:bg-gray-800 hover:bg-blue-500 hover:text-white dark:hover:bg-blue-600 rounded-xl text-sm font-medium transition-all"
+                        >
+                          {city}
+                        </button>
+                      )
+                    )}
                   </div>
                 </div>
               </div>
