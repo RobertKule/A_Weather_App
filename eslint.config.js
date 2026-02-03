@@ -33,7 +33,7 @@ export default [
         App: true, // évite l'erreur "App is not defined" dans les tests
         localStorage: true, // évite l'erreur "localStorage is not defined"
         sessionStorage: true, // évite l'erreur "sessionStorage is not defined"
-        
+        useGeolocation: true, // évite l'erreur "useGeolocation is not defined"
       },
     },
     plugins: {

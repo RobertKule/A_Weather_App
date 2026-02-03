@@ -141,7 +141,7 @@ export const WeatherProvider = ({ children }) => {
     await fetchWeatherData(cityName);
   };
 
-  const useGeolocation = async () => {
+  const fetchGeolocation = async () => {
     if (!navigator.geolocation) {
       dispatch({
         type: 'SET_ERROR',
@@ -268,7 +268,7 @@ export const WeatherProvider = ({ children }) => {
   const value = {
     ...state,
     searchCity,
-    useGeolocation,
+    fetchGeolocation,
     changeUnit,
     addFavorite,
     removeFavorite,

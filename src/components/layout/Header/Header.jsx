@@ -20,7 +20,7 @@ const Header = ({ className = '' }) => {
     city,
     favorites,
     searchCity,
-    useGeolocation,
+    fetchGeolocation,
     clearError,
     loading,
     toggleDarkMode,
@@ -86,7 +86,7 @@ const Header = ({ className = '' }) => {
   const handleLocationClick = async () => {
     console.log('Géolocalisation demandée');
     try {
-      await useGeolocation();
+      await fetchGeolocation();
       clearError();
     } catch (err) {
       console.error('Erreur géolocalisation:', err);
