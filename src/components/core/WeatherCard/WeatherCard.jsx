@@ -20,15 +20,15 @@ const containerVariants = {
     y: 0,
     transition: {
       duration: 0.6,
-      when: "beforeChildren",
-      staggerChildren: 0.1
-    }
-  }
+      when: 'beforeChildren',
+      staggerChildren: 0.1,
+    },
+  },
 };
 
 const itemVariants = {
   hidden: { opacity: 0, y: 10 },
-  visible: { opacity: 1, y: 0 }
+  visible: { opacity: 1, y: 0 },
 };
 
 const WeatherCard = ({
@@ -37,14 +37,13 @@ const WeatherCard = ({
   onRefresh,
   className = '',
 }) => {
-
   // 1. ÉTAT DE CHARGEMENT
   if (loading) {
     return (
       <motion.div
         initial={{ opacity: 0.5 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, repeat: Infinity, repeatType: "reverse" }}
+        transition={{ duration: 0.5, repeat: Infinity, repeatType: 'reverse' }}
         aria-busy="true"
         aria-label="Chargement des données météo"
       >
@@ -53,7 +52,10 @@ const WeatherCard = ({
           <div className="h-20 bg-gray-200 dark:bg-gray-700 rounded mb-6"></div>
           <div className="grid grid-cols-2 gap-4">
             {[1, 2, 3, 4].map(i => (
-              <div key={i} className="h-16 bg-gray-200 dark:bg-gray-700 rounded"></div>
+              <div
+                key={i}
+                className="h-16 bg-gray-200 dark:bg-gray-700 rounded"
+              ></div>
             ))}
           </div>
         </Card>
@@ -64,9 +66,14 @@ const WeatherCard = ({
   // 2. ÉTAT VIDE
   if (!weatherData) {
     return (
-      <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}>
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+      >
         <Card className={`text-center ${className}`}>
-          <div className="text-6xl mb-4" role="presentation">🌤️</div>
+          <div className="text-6xl mb-4" role="presentation">
+            🌤️
+          </div>
           <h3 className="text-xl font-semibold mb-2">Aucune donnée météo</h3>
           <Button variant="primary">Rechercher une ville</Button>
         </Card>
@@ -102,34 +109,50 @@ const WeatherCard = ({
       className={`max-w-2xl mx-auto ${className}`}
     >
       <Card className="shadow-lg">
-        
         {/* HEADER : Titre accessible et bouton Refresh */}
         <CardHeader>
-          <motion.div variants={itemVariants} className="flex justify-between items-start">
+          <motion.div
+            variants={itemVariants}
+            className="flex justify-between items-start"
+          >
             <div>
-              <h1 id="weather-card-title" className="text-2xl font-bold text-gray-900 dark:text-white">
+              <h1
+                id="weather-card-title"
+                className="text-2xl font-bold text-gray-900 dark:text-white"
+              >
                 Météo à {city}, {country}
               </h1>
               {/* sr-only pour donner l'heure exacte aux lecteurs d'écran */}
               <div className="sr-only">
                 Données mises à jour à {new Date().toLocaleTimeString()}
               </div>
-              <p aria-hidden="true" className="text-gray-600 dark:text-gray-400">
-                Mise à jour à {new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+              <p
+                aria-hidden="true"
+                className="text-gray-600 dark:text-gray-400"
+              >
+                Mise à jour à{' '}
+                {new Date().toLocaleTimeString('fr-FR', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}
               </p>
             </div>
             {onRefresh && (
               <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                <Button 
-                  variant="ghost" 
-                  size="small" 
-                  onClick={onRefresh} 
+                <Button
+                  variant="ghost"
+                  size="small"
+                  onClick={onRefresh}
                   className="flex items-center gap-2"
                   aria-label={`Actualiser la météo de ${city}`}
                 >
-                  <motion.span 
+                  <motion.span
                     animate={loading ? { rotate: 360 } : { rotate: 0 }}
-                    transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+                    transition={{
+                      repeat: Infinity,
+                      duration: 1,
+                      ease: 'linear',
+                    }}
                     aria-hidden="true"
                     className="text-lg"
                   >
@@ -144,13 +167,16 @@ const WeatherCard = ({
 
         {/* BODY : Zone ARIA Live pour les changements de données */}
         <CardBody>
-          <div 
+          <div
             className="flex flex-col md:flex-row items-center md:items-start gap-8"
             aria-live="polite"
             aria-atomic="true"
           >
             {/* Section Température */}
-            <motion.div variants={itemVariants} className="flex-1 text-center md:text-left">
+            <motion.div
+              variants={itemVariants}
+              className="flex-1 text-center md:text-left"
+            >
               <div className="flex items-center justify-center md:justify-start gap-4 mb-4">
                 <motion.div
                   role="img"
@@ -158,24 +184,30 @@ const WeatherCard = ({
                   animate={{ y: [0, -5, 0] }}
                   transition={{ duration: 4, repeat: Infinity }}
                 >
-                  <WeatherIcon conditionCode={conditionId} size={80} className="text-weather-primary" />
+                  <WeatherIcon
+                    conditionCode={conditionId}
+                    size={80}
+                    className="text-weather-primary"
+                  />
                 </motion.div>
-                
+
                 <div>
-                  <motion.div 
+                  <motion.div
                     key={temperature}
                     initial={{ scale: 0.8 }}
                     animate={{ scale: 1 }}
                     className="text-6xl font-bold text-gray-900 dark:text-white"
                     aria-label={`Température actuelle : ${Math.round(temperature)} degrés`}
                   >
-                    {Math.round(temperature)}{tempUnit}
+                    {Math.round(temperature)}
+                    {tempUnit}
                   </motion.div>
-                  <p 
+                  <p
                     className="text-gray-600 dark:text-gray-400"
                     aria-label={`Ressenti : ${Math.round(feelsLike)} degrés`}
                   >
-                    Ressenti {Math.round(feelsLike)}{tempUnit}
+                    Ressenti {Math.round(feelsLike)}
+                    {tempUnit}
                   </p>
                 </div>
               </div>
@@ -185,17 +217,34 @@ const WeatherCard = ({
             </motion.div>
 
             {/* Grille de détails avec navigation clavier */}
-            <div 
+            <div
               className="flex-1 w-full"
               role="region"
               aria-label="Détails météorologiques"
             >
               <div className="grid grid-cols-2 gap-4">
                 {[
-                  { icon: <WiHumidity className="text-2xl text-blue-500" />, label: "Humidité", value: `${humidity}%` },
-                  { icon: <WiStrongWind className="text-2xl text-green-500" />, label: "Vent", value: `${windSpeed} ${windUnit}` },
-                  { icon: <WiBarometer className="text-2xl text-purple-500" />, label: "Pression", value: `${pressure} hPa` },
-                  { icon: <WiDaySunny className="text-2xl text-yellow-500" />, label: "Index UV", value: uvIndex, level: getUVLevel(uvIndex) }
+                  {
+                    icon: <WiHumidity className="text-2xl text-blue-500" />,
+                    label: 'Humidité',
+                    value: `${humidity}%`,
+                  },
+                  {
+                    icon: <WiStrongWind className="text-2xl text-green-500" />,
+                    label: 'Vent',
+                    value: `${windSpeed} ${windUnit}`,
+                  },
+                  {
+                    icon: <WiBarometer className="text-2xl text-purple-500" />,
+                    label: 'Pression',
+                    value: `${pressure} hPa`,
+                  },
+                  {
+                    icon: <WiDaySunny className="text-2xl text-yellow-500" />,
+                    label: 'Index UV',
+                    value: uvIndex,
+                    level: getUVLevel(uvIndex),
+                  },
                 ].map((detail, index) => (
                   <motion.div
                     key={detail.label}
@@ -211,12 +260,33 @@ const WeatherCard = ({
         </CardBody>
 
         <CardFooter>
-          <motion.div variants={itemVariants} className="flex justify-between items-center text-sm text-gray-600 dark:text-gray-400">
+          <motion.div
+            variants={itemVariants}
+            className="flex justify-between items-center text-sm text-gray-600 dark:text-gray-400"
+          >
             <span>Données : OpenWeatherMap</span>
-            <div className="flex items-center gap-2" role="group" aria-label="Choix de l'unité">
-              <Button variant="ghost" size="small" className={`text-xs ${unit === 'metric' ? 'font-bold underline' : ''}`}>°C</Button>
-              <span className="text-gray-400" aria-hidden="true">|</span>
-              <Button variant="ghost" size="small" className={`text-xs ${unit === 'imperial' ? 'font-bold underline' : ''}`}>°F</Button>
+            <div
+              className="flex items-center gap-2"
+              role="group"
+              aria-label="Choix de l'unité"
+            >
+              <Button
+                variant="ghost"
+                size="small"
+                className={`text-xs ${unit === 'metric' ? 'font-bold underline' : ''}`}
+              >
+                °C
+              </Button>
+              <span className="text-gray-400" aria-hidden="true">
+                |
+              </span>
+              <Button
+                variant="ghost"
+                size="small"
+                className={`text-xs ${unit === 'imperial' ? 'font-bold underline' : ''}`}
+              >
+                °F
+              </Button>
             </div>
           </motion.div>
         </CardFooter>
@@ -226,19 +296,30 @@ const WeatherCard = ({
 };
 
 const WeatherDetail = ({ icon, label, value, level }) => {
-  const getLevelColor = (lvl) => {
-    const colors = { low: 'text-green-600', moderate: 'text-yellow-600', high: 'text-orange-600', 'very-high': 'text-red-600', extreme: 'text-purple-600' };
+  const getLevelColor = lvl => {
+    const colors = {
+      low: 'text-green-600',
+      moderate: 'text-yellow-600',
+      high: 'text-orange-600',
+      'very-high': 'text-red-600',
+      extreme: 'text-purple-600',
+    };
     return colors[lvl] || 'text-gray-600 dark:text-gray-400';
   };
 
   return (
-    <div 
+    <div
       tabIndex={0} // Permet de naviguer entre les détails avec Tab
       role="group"
       aria-label={`${label} : ${value}`}
       className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
     >
-      <div className="p-2 bg-white dark:bg-gray-700 rounded-lg shadow-sm" aria-hidden="true">{icon}</div>
+      <div
+        className="p-2 bg-white dark:bg-gray-700 rounded-lg shadow-sm"
+        aria-hidden="true"
+      >
+        {icon}
+      </div>
       <div>
         <div className="text-xs text-gray-500 dark:text-gray-400">{label}</div>
         <div className={`font-semibold ${getLevelColor(level)}`}>{value}</div>
@@ -247,7 +328,7 @@ const WeatherDetail = ({ icon, label, value, level }) => {
   );
 };
 
-const getUVLevel = (uv) => {
+const getUVLevel = uv => {
   if (uv <= 2) return 'low';
   if (uv <= 5) return 'moderate';
   if (uv <= 7) return 'high';
