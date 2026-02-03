@@ -26,7 +26,14 @@ export default [
         fetch: true,
         clearInterval: true,
         setInterval: true,
-        
+        console: true, // évite l'erreur "console is not defined"
+        navigator: true, // évite l'erreur "navigator is not defined"
+        React: true, // évite l'erreur "React is not defined" dans les fichiers JSX
+        StrictMode: true, // évite l'erreur "StrictMode is not defined"
+        App: true, // évite l'erreur "App is not defined" dans les tests
+        localStorage: true, // évite l'erreur "localStorage is not defined"
+        sessionStorage: true, // évite l'erreur "sessionStorage is not defined"
+        useGeolocation: true, // évite l'erreur "useGeolocation is not defined"
       },
     },
     plugins: {

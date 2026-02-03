@@ -57,7 +57,7 @@ export const UNITS = {
 };
 
 export const DEFAULT_CITY = {
-  name: 'Paris',
+  name: 'Goma',
   country: 'FR',
   lat: 48.8566,
   lon: 2.3522,

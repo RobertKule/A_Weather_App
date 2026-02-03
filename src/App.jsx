@@ -1,178 +1,290 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { WeatherProvider, useWeather } from './contexts/WeatherContext';
+import Header from '@components/layout/Header/Header';
 import WeatherCard from '@components/core/WeatherCard/WeatherCard';
-import './App.css';
+import Sidebar from '@components/layout/Sidebar/Sidebar'; // IMPORT AJOUTÉ
+import { WiDaySunny } from 'react-icons/wi';
+// import './App.css';
 
-// Données mock pour tester
-const mockWeatherData = {
-  city: 'Paris',
-  country: 'FR',
-  temperature: 22,
-  feelsLike: 20,
-  condition: 'Ensoleillé',
-  conditionId: 800,
-  humidity: 65,
-  windSpeed: 12,
-  windDirection: 'NE',
-  pressure: 1013,
-  uvIndex: 6,
-  unit: 'metric',
-};
+// Composant principal qui utilise le contexte
+const WeatherApp = () => {
+  const {
+    weatherData,
+    forecastData,
+    hourlyForecast,
+    loading,
+    error,
+    unit,
+    city,
+    favorites,
+    searchCity,
+    useGeolocation,
+    changeUnit,
+    addFavorite,
+    removeFavorite,
+    refreshData,
+    clearError,
+  } = useWeather();
 
-function App() {
-  const [weatherData, setWeatherData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  // Données simulées pour les villes à proximité (pour Goma)
+  const nearbyCities = [
+    { name: 'Bukavu', distance: '105km', temp: '24°' },
+    { name: 'Butembo', distance: '245km', temp: '23°' },
+    { name: 'Beni', distance: '280km', temp: '25°' },
+    { name: 'Kigali', distance: '165km', temp: '22°' },
+    { name: 'Gisenyi', distance: '95km', temp: '23°' },
+  ];
 
+  const handleCitySelect = cityName => {
+    console.log('Sélection de ville:', cityName);
+    searchCity(cityName);
+  };
+
+  const handleToggleFavorite = cityName => {
+    console.log('Toggle favorite:', cityName);
+    if (favorites.includes(cityName)) {
+      removeFavorite(cityName);
+    } else {
+      addFavorite(cityName);
+    }
+  };
+
+  // Gérer les erreurs
   useEffect(() => {
-    // Simule un appel API
-    const timer = setTimeout(() => {
-      setWeatherData(mockWeatherData);
-      setLoading(false);
-    }, 1500);
+    if (error) {
+      console.error('Erreur météo:', error);
+    }
+  }, [error]);
 
-    return () => clearTimeout(timer);
-  }, []);
-
-  const handleRefresh = () => {
-    setLoading(true);
-    setTimeout(() => {
-      // Simule de nouvelles données
-      setWeatherData({
-        ...mockWeatherData,
-        temperature: mockWeatherData.temperature + 1,
-        humidity: Math.floor(Math.random() * 20) + 60,
-      });
-      setLoading(false);
-    }, 1000);
+  // Fonction pour obtenir l'icône météo
+  const getWeatherIcon = condition => {
+    if (!condition) return '☀️';
+    const cond = condition.toLowerCase();
+    if (cond.includes('soleil') || cond.includes('clear')) return '☀️';
+    if (cond.includes('nuage') || cond.includes('cloud')) return '☁️';
+    if (cond.includes('pluie') || cond.includes('rain')) return '🌧️';
+    if (cond.includes('orage') || cond.includes('storm')) return '⛈️';
+    if (cond.includes('neige') || cond.includes('snow')) return '❄️';
+    return '☀️';
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4 md:p-8">
-      <div className="max-w-7xl mx-auto">
-        {/* Header temporaire */}
-        <header className="mb-8">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                🌤️ rk-weather
-              </h1>
-              <p className="text-gray-600 dark:text-gray-400">
-                Application météo moderne
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
+      <Header
+        currentCity={city}
+        favorites={favorites}
+        onToggleFavorite={handleToggleFavorite}
+      />
+
+      <main className="container mx-auto px-4 py-8">
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6 p-4 bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-700 rounded-lg text-red-700 dark:text-red-300"
+          >
+            <div className="flex justify-between items-center">
+              <span>{error}</span>
+              <button
+                onClick={clearError}
+                className="text-red-700 dark:text-red-300 hover:text-red-900 dark:hover:text-red-100"
+              >
+                ✕
+              </button>
+            </div>
+          </motion.div>
+        )}
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Colonne principale - WeatherCard */}
+          <div className="lg:col-span-2 space-y-8">
+            <WeatherCard
+              weatherData={weatherData}
+              loading={loading}
+              onRefresh={refreshData}
+              unit={unit}
+              onUnitChange={changeUnit}
+            />
+
+            {/* Prévisions sur 7 jours */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="card p-6 bg-white dark:bg-gray-800 rounded-3xl shadow-sm"
+            >
+              <h2 className="text-xl font-bold mb-6 text-gray-900 dark:text-white">
+                Prévisions sur 7 jours
+              </h2>
+              <div className="grid grid-cols-2 sm:grid-cols-7 gap-4">
+                {forecastData.length > 0
+                  ? forecastData.slice(0, 7).map((day, index) => (
+                      <div
+                        key={index}
+                        className="flex flex-col items-center p-3 rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                      >
+                        <span className="text-gray-500 dark:text-gray-400 text-sm font-medium">
+                          {day.date?.split(' ')[0] || `Jour ${index + 1}`}
+                        </span>
+                        <span className="text-xs text-gray-400">
+                          {day.date?.split(' ').slice(1).join(' ') || ''}
+                        </span>
+                        <div
+                          className="text-3xl my-3"
+                          role="img"
+                          aria-label={day.condition || 'Ensoleillé'}
+                        >
+                          {getWeatherIcon(day.condition)}
+                        </div>
+                        <div className="flex flex-col items-center">
+                          <span className="font-bold text-gray-900 dark:text-white">
+                            {day.temp_max || 24}°
+                          </span>
+                          <span className="text-sm text-gray-400">
+                            {day.temp_min || 18}°
+                          </span>
+                        </div>
+                      </div>
+                    ))
+                  : // Fallback si pas de données
+                    Array.from({ length: 7 }).map((_, index) => (
+                      <div
+                        key={index}
+                        className="flex flex-col items-center p-3 rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                      >
+                        <span className="text-gray-500 dark:text-gray-400 text-sm font-medium">
+                          {
+                            ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'][
+                              index
+                            ]
+                          }
+                        </span>
+                        <div className="text-3xl my-3">☀️</div>
+                        <div className="flex flex-col items-center">
+                          <span className="font-bold text-gray-900 dark:text-white">
+                            24°
+                          </span>
+                          <span className="text-sm text-gray-400">18°</span>
+                        </div>
+                      </div>
+                    ))}
+              </div>
+            </motion.div>
+
+            {/* Graphique de température */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="card p-6 bg-white dark:bg-gray-800 rounded-3xl shadow-sm"
+            >
+              <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">
+                Évolution sur 24h
+              </h2>
+              <div className="h-48 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-700/30 dark:to-gray-700/10 rounded-2xl flex flex-col items-center justify-center border-2 border-dashed border-blue-100 dark:border-gray-700">
+                {hourlyForecast.length > 0 ? (
+                  <div className="w-full h-full p-4">
+                    <p className="text-blue-400 dark:text-gray-500 font-medium text-center">
+                      Graphique des températures en développement
+                    </p>
+                    <div className="mt-4 flex items-center justify-center h-32">
+                      {/* Mini graphique simple */}
+                      <div className="flex items-end gap-1 h-24">
+                        {hourlyForecast.slice(0, 8).map((hour, i) => (
+                          <div key={i} className="flex flex-col items-center">
+                            <div
+                              className="w-6 bg-gradient-to-t from-blue-400 to-blue-300 rounded-t"
+                              style={{
+                                height: `${(hour.temperature - 15) * 4}px`,
+                              }}
+                            ></div>
+                            <div className="text-xs text-gray-500 mt-1">
+                              {hour.time}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-blue-400 dark:text-gray-500 font-medium">
+                    Données horaires à venir
+                  </p>
+                )}
+              </div>
+            </motion.div>
+          </div>
+
+          {/* SIDEBAR - COLONNE DE DROITE */}
+          <div className="lg:col-span-1">
+            <Sidebar
+              hourlyForecast={hourlyForecast}
+              dailyForecast={forecastData}
+              nearbyCities={nearbyCities}
+              favorites={favorites}
+              weatherData={weatherData}
+              onCitySelect={handleCitySelect}
+              onToggleFavorite={handleToggleFavorite}
+            />
+          </div>
+        </div>
+      </main>
+
+      {/* Footer */}
+      <footer className="mt-12 py-10 border-t border-gray-200 dark:border-gray-800 bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+            <div className="text-center md:text-left">
+              <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
+                <WiDaySunny className="text-2xl text-yellow-500" />
+                <span className="font-bold text-xl tracking-tight text-gray-900 dark:text-white">
+                  rk-weather
+                </span>
+              </div>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Météo précise pour Goma et le monde
               </p>
             </div>
-            <div className="flex items-center gap-4">
-              <button className="btn-secondary">🌍 Ma position</button>
-              <button className="btn-primary">🔍 Rechercher</button>
+
+            <nav className="flex flex-wrap justify-center gap-6 text-sm font-medium">
+              <a
+                href="#"
+                className="text-gray-600 dark:text-gray-400 hover:text-blue-600 transition-colors"
+              >
+                Conditions
+              </a>
+              <a
+                href="#"
+                className="text-gray-600 dark:text-gray-400 hover:text-blue-600 transition-colors"
+              >
+                Confidentialité
+              </a>
+              <a
+                href="#"
+                className="text-gray-600 dark:text-gray-400 hover:text-blue-600 transition-colors"
+              >
+                Contact
+              </a>
+            </nav>
+
+            <div className="text-sm text-gray-400">
+              © {new Date().getFullYear()} rk-weather • Data by OpenWeatherMap
             </div>
           </div>
-        </header>
-
-        <main>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Colonne principale - WeatherCard */}
-            <div className="lg:col-span-2">
-              <WeatherCard
-                weatherData={weatherData}
-                loading={loading}
-                onRefresh={handleRefresh}
-              />
-
-              {/* Section prévisions (placeholder) */}
-              <div className="card mt-8 p-6">
-                <h2 className="text-xl font-bold mb-4">
-                  Prévisions sur 7 jours
-                </h2>
-                <div className="flex justify-between overflow-x-auto pb-4">
-                  {['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map(
-                    (day, i) => (
-                      <div
-                        key={day}
-                        className="flex flex-col items-center p-3 min-w-[80px]"
-                      >
-                        <span className="text-gray-600 dark:text-gray-400">
-                          {day}
-                        </span>
-                        <div className="text-3xl my-2">☀️</div>
-                        <span className="font-bold">24°</span>
-                        <span className="text-sm text-gray-500">18°</span>
-                      </div>
-                    )
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Sidebar (placeholder) */}
-            <div className="lg:col-span-1">
-              <div className="card p-6 mb-6">
-                <h2 className="text-xl font-bold mb-4">Prévisions horaires</h2>
-                <div className="space-y-3">
-                  {[14, 15, 16, 17, 18, 19].map(hour => (
-                    <div
-                      key={hour}
-                      className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700"
-                    >
-                      <span className="text-gray-600 dark:text-gray-400">
-                        {hour}h
-                      </span>
-                      <div className="text-2xl">☀️</div>
-                      <span className="font-bold">{22 - (hour - 14)}°</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="card p-6">
-                <h2 className="text-xl font-bold mb-4">Villes favorites</h2>
-                <div className="space-y-3">
-                  {['Paris', 'Lyon', 'Marseille', 'Londres', 'New York'].map(
-                    city => (
-                      <button
-                        key={city}
-                        className="w-full flex justify-between items-center p-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
-                      >
-                        <span>{city}</span>
-                        <span className="text-gray-500">22°</span>
-                      </button>
-                    )
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        </main>
-
-        <footer className="mt-12 text-center text-gray-500 dark:text-gray-400 text-sm">
-          <p>
-            © {new Date().getFullYear()} rk-weather - Données météo par
-            OpenWeatherMap
-          </p>
-          <p className="mt-2">
-            <a
-              href="#"
-              className="hover:text-weather-primary transition-colors"
-            >
-              Conditions d'utilisation
-            </a>{' '}
-            •
-            <a
-              href="#"
-              className="hover:text-weather-primary transition-colors ml-4"
-            >
-              Politique de confidentialité
-            </a>{' '}
-            •
-            <a
-              href="#"
-              className="hover:text-weather-primary transition-colors ml-4"
-            >
-              À propos
-            </a>
-          </p>
-        </footer>
-      </div>
+        </div>
+      </footer>
     </div>
   );
-}
+};
+
+// Wrapper avec le provider
+const App = () => {
+  return (
+    <WeatherProvider>
+      <WeatherApp />
+    </WeatherProvider>
+  );
+};
 
 export default App;
