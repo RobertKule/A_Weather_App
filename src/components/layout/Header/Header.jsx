@@ -23,29 +23,26 @@ const Header = ({ className = '' }) => {
     useGeolocation,
     clearError,
     loading,
+    toggleDarkMode,
+    isDarkMode,
   } = useWeather();
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    const savedTheme = localStorage.getItem('rk-weather-theme');
-    if (savedTheme) return savedTheme === 'dark';
-    return window.matchMedia('(prefers-color-scheme: dark)').matches;
-  });
   const searchInputRef = useRef(null);
   const menuRef = useRef(null);
 
   // Gérer le thème
   useEffect(() => {
-    if (isDarkMode) {
+    const savedTheme = localStorage.getItem('rk-weather-theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const initialDarkMode = savedTheme ? savedTheme === 'dark' : prefersDark;
+    
+    if (initialDarkMode) {
       document.documentElement.classList.add('dark');
-      localStorage.setItem('rk-weather-theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('rk-weather-theme', 'light');
     }
-  }, [isDarkMode]);
+  }, []);
 
   // Fermer le menu mobile lors d'un clic extérieur
   useEffect(() => {
@@ -68,6 +65,7 @@ const Header = ({ className = '' }) => {
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
+      console.log('Recherche de:', searchQuery.trim());
       searchCity(searchQuery.trim());
       setIsSearchOpen(false);
       setSearchQuery('');
@@ -76,6 +74,7 @@ const Header = ({ className = '' }) => {
   };
 
   const handleQuickCitySelect = (selectedCity) => {
+    console.log('Sélection rapide:', selectedCity);
     searchCity(selectedCity);
     setIsSearchOpen(false);
     setSearchQuery('');
@@ -83,6 +82,7 @@ const Header = ({ className = '' }) => {
   };
 
   const handleLocationClick = async () => {
+    console.log('Géolocalisation demandée');
     try {
       await useGeolocation();
       clearError();
@@ -92,12 +92,26 @@ const Header = ({ className = '' }) => {
   };
 
   const handleToggleTheme = () => {
-    setIsDarkMode(!isDarkMode);
-  };
+  console.log('Toggle thème appelé');
+  if (toggleDarkMode) {
+    toggleDarkMode(); // Utilise la fonction du contexte
+  } else {
+    console.warn('toggleDarkMode non disponible dans le contexte');
+    // Fallback
+    const newDarkMode = !document.documentElement.classList.contains('dark');
+    if (newDarkMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('rk-weather-theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('rk-weather-theme', 'light');
+    }
+  }
+};
 
   const handleToggleFavorite = (cityToToggle) => {
-    // Cette fonction serait implémentée dans le contexte si besoin
-    console.log('Toggle favorite:', cityToToggle);
+    console.log('Toggle favorite (depuis Header):', cityToToggle);
+    // Cette fonction serait appelée depuis App.jsx via props
   };
 
   return (
@@ -129,7 +143,7 @@ const Header = ({ className = '' }) => {
                   rk-weather
                 </h1>
                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">
-                  {city || 'Chargement...'}
+                  {city || 'Goma'}
                 </span>
               </div>
             </div>
@@ -169,13 +183,13 @@ const Header = ({ className = '' }) => {
                 <FiMapPin size={18} />
               </Button>
               <Button
-                variant="ghost"
-                size="small"
-                onClick={handleToggleTheme}
-                aria-label={`Passer en mode ${isDarkMode ? 'clair' : 'sombre'}`}
-              >
-                {isDarkMode ? <FiSun size={18} /> : <FiMoon size={18} />}
-              </Button>
+  variant="ghost"
+  size="small"
+  onClick={handleToggleTheme}
+  aria-label={`Passer en mode ${isDarkMode ? 'clair' : 'sombre'}`} // Utilise isDarkMode du contexte
+>
+  {isDarkMode ? <FiSun size={18} /> : <FiMoon size={18} />}
+</Button>
             </div>
           </div>
         </div>
@@ -232,8 +246,8 @@ const Header = ({ className = '' }) => {
                   onClick={handleToggleTheme}
                   className="flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300"
                 >
-                  {isDarkMode ? <FiSun /> : <FiMoon />}
-                  {isDarkMode ? 'Mode Clair' : 'Mode Sombre'}
+                  {document.documentElement.classList.contains('dark') ? <FiSun /> : <FiMoon />}
+                  {document.documentElement.classList.contains('dark') ? 'Mode Clair' : 'Mode Sombre'}
                 </button>
                 
                 <button className="flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300">
@@ -300,7 +314,7 @@ const Header = ({ className = '' }) => {
                     Suggestions
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    {['Paris', 'New York', 'Tokyo', 'London', 'Berlin'].map(
+                    {['Goma', 'Kinshasa', 'Kigali', 'Paris', 'Londres', 'New York'].map(
                       (suggestedCity) => (
                         <button
                           key={suggestedCity}
@@ -319,17 +333,18 @@ const Header = ({ className = '' }) => {
                         Favoris
                       </p>
                       <div className="flex flex-wrap gap-2">
-                        {favorites.map((favCity) => (
-                          <button
-                            key={favCity}
-                            onClick={() => handleQuickCitySelect(favCity)}
-                            className="px-4 py-2 bg-yellow-50 dark:bg-yellow-900/30 hover:bg-yellow-500 hover:text-white dark:hover:bg-yellow-600 rounded-xl text-sm font-medium transition-all flex items-center gap-2"
-                          >
-                            <FiStar size={14} />
-                            {favCity}
-                          </button>
-                        ))}
-                      </div>
+  {favorites.map((favCity) => (
+    <button
+      key={favCity}
+      onClick={() => handleQuickCitySelect(favCity)}
+      className="px-4 py-2 bg-yellow-50 dark:bg-yellow-900/30 hover:bg-yellow-500 hover:text-white dark:hover:bg-yellow-600 rounded-xl text-sm font-medium transition-all flex items-center gap-2"
+    >
+      <FiStar size={14} />
+      {favCity}
+    </button>
+  ))}
+</div>
+
                     </>
                   )}
                 </div>
