@@ -20,6 +20,13 @@ export default [
         browser: true,
         node: true,
         document: true, // évite l'erreur "document is not defined"
+        window: true,   // évite l'erreur "window is not defined"
+        setTimeout: true,
+        clearTimeout: true,
+        fetch: true,
+        clearInterval: true,
+        setInterval: true,
+        
       },
     },
     plugins: {
