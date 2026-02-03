@@ -1,10 +1,91 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>a-weather-app</title>
+    
+    <!-- Primary Meta Tags -->
+    <title>rk-weather 🌤️ | Application Météo Moderne & Prévisions Gratuites</title>
+    <meta name="title" content="rk-weather 🌤️ | Application Météo Moderne & Prévisions Gratuites">
+    <meta name="description" content="Application météo gratuite avec prévisions précises sur 7 jours, géolocalisation automatique et interface moderne. Température, humidité, vent et UV en temps réel.">
+    <meta name="keywords" content="météo, prévisions météo, application météo, température, humidité, vent, rk-weather, météo gratuite, prévisions 7 jours, géolocalisation météo">
+    <meta name="author" content="Robert Kule">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="French">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://rk-wheather.netlify.app/">
+    <meta property="og:title" content="rk-weather 🌤️ | Application Météo Moderne">
+    <meta property="og:description" content="Application météo gratuite avec prévisions précises sur 7 jours. Consultez la météo de votre ville en temps réel.">
+    <meta property="og:image" content="https://rk-wheather.netlify.app/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:locale" content="fr_FR">
+    <meta property="og:site_name" content="rk-weather">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://rk-wheather.netlify.app/">
+    <meta property="twitter:title" content="rk-weather 🌤️ | Application Météo Moderne">
+    <meta property="twitter:description" content="Application météo gratuite avec prévisions précises sur 7 jours. Consultez la météo de votre ville en temps réel.">
+    <meta property="twitter:image" content="https://rk-wheather.netlify.app/twitter-card.png">
+    <meta property="twitter:creator" content="@robertkule">
+    
+    <!-- Canonical -->
+    <link rel="canonical" href="https://rk-wheather.netlify.app/">
+    
+    <!-- Manifest PWA -->
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#3B82F6">
+    <meta name="msapplication-TileColor" content="#3B82F6">
+    
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    
+    <!-- Favicons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    
+    <!-- Preconnect to APIs -->
+    <link rel="preconnect" href="https://api.openweathermap.org">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" as="style">
+    
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "rk-weather",
+      "url": "https://rk-weather.netlify.app",
+      "description": "Application météo gratuite avec prévisions précises sur 7 jours",
+      "applicationCategory": "WeatherApplication",
+      "operatingSystem": "Any",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "EUR"
+      },
+      "author": {
+        "@type": "Person",
+        "name": "Robert Kule"
+      },
+      "featureList": [
+        "Prévisions sur 7 jours",
+        "Géolocalisation automatique",
+        "Température en temps réel",
+        "Données vent et humidité",
+        "Interface responsive"
+      ]
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -13,7 +13,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "npm run sitemap && vite build",
     "preview": "vite preview",
     "lint": "eslint src --report-unused-disable-directives --max-warnings 0", 
     "lint:fix": "eslint src --report-unused-disable-directives --max-warnings 0 --fix",
@@ -23,7 +23,9 @@
     "netlify:deploy": "netlify deploy --prod",
   "netlify:deploy:preview": "netlify deploy",
   "netlify:build": "npm run build && npm run postbuild",
-  "postbuild": "cp _redirects dist/_redirects 2>/dev/null || :"
+  "postbuild": "cp _redirects dist/_redirects 2>/dev/null || :",
+   "sitemap": "node scripts/generate-sitemap.js",
+   "lighthouse": "lighthouse http://localhost:3000 --view --output=html --output-path=./lighthouse-report.html"
   },
   "dependencies": {
     "react": "^19.2.0",

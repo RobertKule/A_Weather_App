@@ -1,0 +1,14 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://rk-wheather.netlify.app/sitemap.xml
+
+# Crawl delay (requests par seconde)
+Crawl-delay: 2
+
+# Disallow certains chemins (optionnel)
+Disallow: /api/
+Disallow: /admin/
+Disallow: /private/
