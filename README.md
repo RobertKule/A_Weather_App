@@ -5,7 +5,7 @@
 ![Vite](https://img.shields.io/badge/Vite-B73BFE?style=for-the-badge&logo=vite&logoColor=FFD62E)
 ![Netlify](https://img.shields.io/badge/Netlify-00C7B7?style=for-the-badge&logo=netlify&logoColor=white)
 
-**rk-Weather** est une application météo moderne et intuitive construite avec React.js, offrant des prévisions météorologiques précises avec une interface utilisateur élégante et responsive.
+**rk-weather* est une application météo moderne et intuitive construite avec React.js, offrant des prévisions météorologiques précises avec une interface utilisateur élégante et responsive.
 
 🚀 **Live Demo :** [rk-wheather.netlify.app](https://rk-wheather.netlify.app/)
 
