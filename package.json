@@ -32,11 +32,12 @@
     "sitemap": "node scripts/generate-sitemap.js",
     "lighthouse": "lighthouse http://localhost:3000 --view --output=html --output-path=./lighthouse-report.html",
     "test": "vitest",
-  "test:ui": "vitest --ui",
-  "test:coverage": "vitest --coverage",
-  "test:watch": "vitest --watch"
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage",
+    "test:watch": "vitest --watch"
   },
   "dependencies": {
+    "axios": "^1.13.4",
     "framer-motion": "^12.30.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",

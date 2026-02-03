@@ -13,25 +13,43 @@ import {
 } from 'react-icons/fi';
 import { WiDaySunny } from 'react-icons/wi';
 import Button from '../../ui/Button/Button';
+import { useWeather } from '../../../contexts/WeatherContext';
 
-const Header = ({
-  onSearch,
-  onLocationClick,
-  onToggleTheme,
-  isDarkMode = false,
-  currentCity = 'Paris',
-  favorites = [],
-  className = '',
-}) => {
+const Header = ({ className = '' }) => {
+  const {
+    city,
+    favorites,
+    searchCity,
+    useGeolocation,
+    clearError,
+    loading,
+  } = useWeather();
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    const savedTheme = localStorage.getItem('rk-weather-theme');
+    if (savedTheme) return savedTheme === 'dark';
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  });
   const searchInputRef = useRef(null);
   const menuRef = useRef(null);
 
+  // Gérer le thème
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('rk-weather-theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('rk-weather-theme', 'light');
+    }
+  }, [isDarkMode]);
+
   // Fermer le menu mobile lors d'un clic extérieur
   useEffect(() => {
-    const handleClickOutside = event => {
+    const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
         setIsMenuOpen(false);
       }
@@ -47,19 +65,39 @@ const Header = ({
     }
   }, [isSearchOpen]);
 
-  const handleSearch = e => {
+  const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      onSearch?.(searchQuery.trim());
+      searchCity(searchQuery.trim());
       setIsSearchOpen(false);
       setSearchQuery('');
+      clearError();
     }
   };
 
-  const handleQuickCitySelect = city => {
-    onSearch?.(city);
+  const handleQuickCitySelect = (selectedCity) => {
+    searchCity(selectedCity);
     setIsSearchOpen(false);
     setSearchQuery('');
+    clearError();
+  };
+
+  const handleLocationClick = async () => {
+    try {
+      await useGeolocation();
+      clearError();
+    } catch (err) {
+      console.error('Erreur géolocalisation:', err);
+    }
+  };
+
+  const handleToggleTheme = () => {
+    setIsDarkMode(!isDarkMode);
+  };
+
+  const handleToggleFavorite = (cityToToggle) => {
+    // Cette fonction serait implémentée dans le contexte si besoin
+    console.log('Toggle favorite:', cityToToggle);
   };
 
   return (
@@ -70,11 +108,13 @@ const Header = ({
     >
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between gap-4">
-          {/* 1. LOGO & NOM (Visible partout) */}
+          {/* 1. LOGO & NOM */}
           <div className="flex items-center gap-3 flex-shrink-0">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              aria-label="Menu principal"
+              aria-expanded={isMenuOpen}
             >
               {isMenuOpen ? <FiX size={22} /> : <FiMenu size={22} />}
             </button>
@@ -89,13 +129,13 @@ const Header = ({
                   rk-weather
                 </h1>
                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">
-                  {currentCity}
+                  {city || 'Chargement...'}
                 </span>
               </div>
             </div>
           </div>
 
-          {/* 2. ONGLETS DESKTOP (MD+) */}
+          {/* 2. ONGLETS DESKTOP */}
           <nav className="hidden md:flex items-center gap-1 bg-gray-100/50 dark:bg-gray-800/50 p-1 rounded-xl">
             <button className="px-4 py-2 text-sm font-bold rounded-lg bg-white dark:bg-gray-700 shadow-sm text-blue-600">
               Météo
@@ -113,15 +153,27 @@ const Header = ({
             <button
               onClick={() => setIsSearchOpen(true)}
               className="p-2.5 bg-gray-100 dark:bg-gray-800 text-gray-500 hover:text-blue-500 rounded-xl transition-all"
+              aria-label="Rechercher une ville"
             >
               <FiSearch size={20} />
             </button>
 
             <div className="hidden sm:flex items-center border-l border-gray-200 dark:border-gray-700 ml-2 pl-2 gap-2">
-              <Button variant="ghost" size="small" onClick={onLocationClick}>
+              <Button
+                variant="ghost"
+                size="small"
+                onClick={handleLocationClick}
+                disabled={loading}
+                aria-label="Utiliser ma position"
+              >
                 <FiMapPin size={18} />
               </Button>
-              <Button variant="ghost" size="small" onClick={onToggleTheme}>
+              <Button
+                variant="ghost"
+                size="small"
+                onClick={handleToggleTheme}
+                aria-label={`Passer en mode ${isDarkMode ? 'clair' : 'sombre'}`}
+              >
                 {isDarkMode ? <FiSun size={18} /> : <FiMoon size={18} />}
               </Button>
             </div>
@@ -142,15 +194,48 @@ const Header = ({
                 <button className="flex items-center gap-4 px-4 py-3 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 font-bold">
                   <FiCloud /> Météo Actuelle
                 </button>
-                <button className="flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300">
-                  <FiStar /> Favoris
-                </button>
+                
+                {favorites.length > 0 && (
+                  <div className="px-4 py-2">
+                    <h3 className="font-semibold mb-2 text-gray-600 dark:text-gray-400">
+                      Favoris
+                    </h3>
+                    <div className="space-y-1">
+                      {favorites.map((favCity) => (
+                        <button
+                          key={favCity}
+                          onClick={() => {
+                            handleQuickCitySelect(favCity);
+                            setIsMenuOpen(false);
+                          }}
+                          className="w-full text-left px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex items-center justify-between"
+                        >
+                          <span>{favCity}</span>
+                          <FiStar className="text-yellow-500" />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
                 <button
-                  onClick={onLocationClick}
+                  onClick={() => {
+                    handleLocationClick();
+                    setIsMenuOpen(false);
+                  }}
                   className="flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300"
                 >
                   <FiMapPin /> Ma Position
                 </button>
+                
+                <button
+                  onClick={handleToggleTheme}
+                  className="flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300"
+                >
+                  {isDarkMode ? <FiSun /> : <FiMoon />}
+                  {isDarkMode ? 'Mode Clair' : 'Mode Sombre'}
+                </button>
+                
                 <button className="flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300">
                   <FiSettings /> Paramètres
                 </button>
@@ -188,6 +273,7 @@ const Header = ({
                   <button
                     onClick={() => setIsSearchOpen(false)}
                     className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
+                    aria-label="Fermer la recherche"
                   >
                     <FiX size={20} />
                   </button>
@@ -202,9 +288,10 @@ const Header = ({
                     ref={searchInputRef}
                     type="text"
                     value={searchQuery}
-                    onChange={e => setSearchQuery(e.target.value)}
+                    onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Entrez une ville..."
                     className="w-full pl-12 pr-4 py-4 bg-gray-100 dark:bg-gray-800 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 text-lg font-medium"
+                    aria-label="Rechercher une ville"
                   />
                 </form>
 
@@ -214,17 +301,37 @@ const Header = ({
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {['Paris', 'New York', 'Tokyo', 'London', 'Berlin'].map(
-                      city => (
+                      (suggestedCity) => (
                         <button
-                          key={city}
-                          onClick={() => handleQuickCitySelect(city)}
+                          key={suggestedCity}
+                          onClick={() => handleQuickCitySelect(suggestedCity)}
                           className="px-4 py-2 bg-gray-50 dark:bg-gray-800 hover:bg-blue-500 hover:text-white dark:hover:bg-blue-600 rounded-xl text-sm font-medium transition-all"
                         >
-                          {city}
+                          {suggestedCity}
                         </button>
                       )
                     )}
                   </div>
+                  
+                  {favorites.length > 0 && (
+                    <>
+                      <p className="text-xs font-bold uppercase text-gray-400 tracking-widest mt-4">
+                        Favoris
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {favorites.map((favCity) => (
+                          <button
+                            key={favCity}
+                            onClick={() => handleQuickCitySelect(favCity)}
+                            className="px-4 py-2 bg-yellow-50 dark:bg-yellow-900/30 hover:bg-yellow-500 hover:text-white dark:hover:bg-yellow-600 rounded-xl text-sm font-medium transition-all flex items-center gap-2"
+                          >
+                            <FiStar size={14} />
+                            {favCity}
+                          </button>
+                        ))}
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </motion.div>

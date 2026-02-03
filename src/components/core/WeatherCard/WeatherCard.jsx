@@ -35,6 +35,8 @@ const WeatherCard = ({
   weatherData,
   loading = false,
   onRefresh,
+  unit = 'metric',
+  onUnitChange,
   className = '',
 }) => {
   // 1. ÉTAT DE CHARGEMENT
@@ -93,7 +95,6 @@ const WeatherCard = ({
     windDirection,
     pressure,
     uvIndex,
-    unit = 'metric',
   } = weatherData;
 
   const tempUnit = unit === 'metric' ? '°C' : '°F';
@@ -101,7 +102,7 @@ const WeatherCard = ({
 
   return (
     <motion.article
-      key={`${city}-${temperature}`}
+      key={`${city}-${temperature}-${unit}`}
       variants={containerVariants}
       initial="hidden"
       animate="visible"
@@ -109,7 +110,7 @@ const WeatherCard = ({
       className={`max-w-2xl mx-auto ${className}`}
     >
       <Card className="shadow-lg">
-        {/* HEADER : Titre accessible et bouton Refresh */}
+        {/* HEADER */}
         <CardHeader>
           <motion.div
             variants={itemVariants}
@@ -122,7 +123,6 @@ const WeatherCard = ({
               >
                 Météo à {city}, {country}
               </h1>
-              {/* sr-only pour donner l'heure exacte aux lecteurs d'écran */}
               <div className="sr-only">
                 Données mises à jour à {new Date().toLocaleTimeString()}
               </div>
@@ -149,7 +149,7 @@ const WeatherCard = ({
                   <motion.span
                     animate={loading ? { rotate: 360 } : { rotate: 0 }}
                     transition={{
-                      repeat: Infinity,
+                      repeat: loading ? Infinity : 0,
                       duration: 1,
                       ease: 'linear',
                     }}
@@ -165,7 +165,7 @@ const WeatherCard = ({
           </motion.div>
         </CardHeader>
 
-        {/* BODY : Zone ARIA Live pour les changements de données */}
+        {/* BODY */}
         <CardBody>
           <div
             className="flex flex-col md:flex-row items-center md:items-start gap-8"
@@ -193,18 +193,18 @@ const WeatherCard = ({
 
                 <div>
                   <motion.div
-                    key={temperature}
+                    key={`${temperature}-${unit}`}
                     initial={{ scale: 0.8 }}
                     animate={{ scale: 1 }}
                     className="text-6xl font-bold text-gray-900 dark:text-white"
-                    aria-label={`Température actuelle : ${Math.round(temperature)} degrés`}
+                    aria-label={`Température actuelle : ${Math.round(temperature)} ${tempUnit}`}
                   >
                     {Math.round(temperature)}
                     {tempUnit}
                   </motion.div>
                   <p
                     className="text-gray-600 dark:text-gray-400"
-                    aria-label={`Ressenti : ${Math.round(feelsLike)} degrés`}
+                    aria-label={`Ressenti : ${Math.round(feelsLike)} ${tempUnit}`}
                   >
                     Ressenti {Math.round(feelsLike)}
                     {tempUnit}
@@ -216,7 +216,7 @@ const WeatherCard = ({
               </h2>
             </motion.div>
 
-            {/* Grille de détails avec navigation clavier */}
+            {/* Grille de détails */}
             <div
               className="flex-1 w-full"
               role="region"
@@ -232,7 +232,7 @@ const WeatherCard = ({
                   {
                     icon: <WiStrongWind className="text-2xl text-green-500" />,
                     label: 'Vent',
-                    value: `${windSpeed} ${windUnit}`,
+                    value: `${Math.round(windSpeed)} ${windUnit} ${windDirection || ''}`,
                   },
                   {
                     icon: <WiBarometer className="text-2xl text-purple-500" />,
@@ -242,7 +242,7 @@ const WeatherCard = ({
                   {
                     icon: <WiDaySunny className="text-2xl text-yellow-500" />,
                     label: 'Index UV',
-                    value: uvIndex,
+                    value: uvIndex || 'N/A',
                     level: getUVLevel(uvIndex),
                   },
                 ].map((detail, index) => (
@@ -259,6 +259,7 @@ const WeatherCard = ({
           </div>
         </CardBody>
 
+        {/* FOOTER avec sélecteur d'unités */}
         <CardFooter>
           <motion.div
             variants={itemVariants}
@@ -271,9 +272,12 @@ const WeatherCard = ({
               aria-label="Choix de l'unité"
             >
               <Button
-                variant="ghost"
+                variant={unit === 'metric' ? 'primary' : 'ghost'}
                 size="small"
-                className={`text-xs ${unit === 'metric' ? 'font-bold underline' : ''}`}
+                className="text-xs"
+                onClick={() => onUnitChange?.('metric')}
+                aria-pressed={unit === 'metric'}
+                aria-label="Utiliser les degrés Celsius"
               >
                 °C
               </Button>
@@ -281,9 +285,12 @@ const WeatherCard = ({
                 |
               </span>
               <Button
-                variant="ghost"
+                variant={unit === 'imperial' ? 'primary' : 'ghost'}
                 size="small"
-                className={`text-xs ${unit === 'imperial' ? 'font-bold underline' : ''}`}
+                className="text-xs"
+                onClick={() => onUnitChange?.('imperial')}
+                aria-pressed={unit === 'imperial'}
+                aria-label="Utiliser les degrés Fahrenheit"
               >
                 °F
               </Button>
@@ -296,7 +303,7 @@ const WeatherCard = ({
 };
 
 const WeatherDetail = ({ icon, label, value, level }) => {
-  const getLevelColor = lvl => {
+  const getLevelColor = (lvl) => {
     const colors = {
       low: 'text-green-600',
       moderate: 'text-yellow-600',
@@ -309,7 +316,7 @@ const WeatherDetail = ({ icon, label, value, level }) => {
 
   return (
     <div
-      tabIndex={0} // Permet de naviguer entre les détails avec Tab
+      tabIndex={0}
       role="group"
       aria-label={`${label} : ${value}`}
       className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
@@ -328,7 +335,8 @@ const WeatherDetail = ({ icon, label, value, level }) => {
   );
 };
 
-const getUVLevel = uv => {
+const getUVLevel = (uv) => {
+  if (!uv) return '';
   if (uv <= 2) return 'low';
   if (uv <= 5) return 'moderate';
   if (uv <= 7) return 'high';
