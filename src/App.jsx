@@ -6,6 +6,9 @@ import WeatherCard from '@components/core/WeatherCard/WeatherCard';
 import Sidebar from '@components/layout/Sidebar/Sidebar'; // IMPORT AJOUTÉ
 import { WiDaySunny } from 'react-icons/wi';
 // import './App.css';
+import TemperatureChart from '@components/charts/TemperatureChart';
+import PrecipitationChart from '@components/charts/PrecipitationChart';
+import WindChart from '@components/charts/WindChart';
 
 // Composant principal qui utilise le contexte
 const WeatherApp = () => {
@@ -172,48 +175,15 @@ const WeatherApp = () => {
               </div>
             </motion.div>
 
-            {/* Graphique de température */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="card p-6 bg-white dark:bg-gray-800 rounded-3xl shadow-sm"
-            >
-              <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">
-                Évolution sur 24h
-              </h2>
-              <div className="h-48 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-700/30 dark:to-gray-700/10 rounded-2xl flex flex-col items-center justify-center border-2 border-dashed border-blue-100 dark:border-gray-700">
-                {hourlyForecast.length > 0 ? (
-                  <div className="w-full h-full p-4">
-                    <p className="text-blue-400 dark:text-gray-500 font-medium text-center">
-                      Graphique des températures en développement
-                    </p>
-                    <div className="mt-4 flex items-center justify-center h-32">
-                      {/* Mini graphique simple */}
-                      <div className="flex items-end gap-1 h-24">
-                        {hourlyForecast.slice(0, 8).map((hour, i) => (
-                          <div key={i} className="flex flex-col items-center">
-                            <div
-                              className="w-6 bg-gradient-to-t from-blue-400 to-blue-300 rounded-t"
-                              style={{
-                                height: `${(hour.temperature - 15) * 4}px`,
-                              }}
-                            ></div>
-                            <div className="text-xs text-gray-500 mt-1">
-                              {hour.time}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <p className="text-blue-400 dark:text-gray-500 font-medium">
-                    Données horaires à venir
-                  </p>
-                )}
+            {/* Graphiques interactifs */}
+            <div className="space-y-8">
+              <TemperatureChart hourlyForecast={hourlyForecast} unit={unit} />
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <PrecipitationChart forecastData={forecastData} />
+                <WindChart weatherData={weatherData} />
               </div>
-            </motion.div>
+            </div>
           </div>
 
           {/* SIDEBAR - COLONNE DE DROITE */}
