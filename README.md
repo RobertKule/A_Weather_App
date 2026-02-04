@@ -9,7 +9,7 @@
 
 🚀 **Live Demo :** [rk-wheather.netlify.app](https://rk-wheather.netlify.app/)
 
-![Weather Web App Design Template _ Weather Web UI Design _ Uizard](https://github.com/user-attachments/assets/0bbbb36a-47f4-4d4d-93d4-e94c5af8bee4)
+![Weather Web App Design Template _ Weather Web UI Design _ Uizard](https://github.com/user-attachments/assets/b2498b3f-dfa9-4154-97f1-27f6bd74af9e)
 
 ## ✨ Fonctionnalités
 
